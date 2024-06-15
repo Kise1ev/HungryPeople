@@ -3,6 +3,7 @@
     <color name="black">#000</color>
     <color name="white">#FFF</color>
     <color name="bright_yellow">#FFE8C300</color>
-
+    <color name="light_gray">#E5E5E5</color>
+    <color name="dark_gray">#333</color>
     <color name="splash_background">@color/black</color>
 </resources>

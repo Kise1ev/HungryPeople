@@ -60,6 +60,7 @@ class AboutUsActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
                     .height(screenHeight),
                 contentAlignment = Alignment.Center
             ) {
@@ -74,7 +75,7 @@ class AboutUsActivity : ComponentActivity() {
                     Text(
                         text = "ABOUT US",
                         textAlign = TextAlign.Center,
-                        fontSize = 75.sp,
+                        fontSize = 60.sp,
                         fontFamily = FontFamily(Font(R.font.tenorsans_regular))
                     )
 
@@ -93,7 +94,7 @@ class AboutUsActivity : ComponentActivity() {
                     Text(
                         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at velit maximus, molestie est a, tempor magna.",
                         textAlign = TextAlign.Center,
-                        fontSize = 23.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -103,7 +104,7 @@ class AboutUsActivity : ComponentActivity() {
                     Text(
                         text = "Integer ullamcorper neque eu purus euismod, ac faucibus mauris posuere. Morbi non ultrices ligula. Sed dictum, enim sed ullamcorper feugiat, dui odio vehicula eros, a sollicitudin lorem quam nec sem. Mauris tincidunt feugiat diam convallis pharetra. Nulla facilisis semper laoreet.",
                         textAlign = TextAlign.Center,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
@@ -130,22 +131,15 @@ class AboutUsActivity : ComponentActivity() {
                 )
 
                 Box(modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "MASTER",
+                            text = "MASTER CHIEF",
                             color = Color.White,
                             textAlign = TextAlign.Center,
-                            fontSize = 75.sp,
-                            fontFamily = FontFamily(Font(R.font.tenorsans_regular))
-                        )
-
-                        Text(
-                            text = "CHIEF",
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            fontSize = 75.sp,
+                            fontSize = 60.sp,
                             fontFamily = FontFamily(Font(R.font.tenorsans_regular))
                         )
 
@@ -165,7 +159,7 @@ class AboutUsActivity : ComponentActivity() {
                             text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at velit maximus, molestie est a, tempor magna.",
                             textAlign = TextAlign.Center,
                             color = Color.White,
-                            fontSize = 23.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
@@ -176,7 +170,7 @@ class AboutUsActivity : ComponentActivity() {
                             text = "Integer ullamcorper neque eu purus euismod, ac faucibus mauris posuere. Morbi non ultrices ligula. Sed dictum, enim sed ullamcorper feugiat, dui odio vehicula eros, a sollicitudin lorem quam nec sem. Mauris tincidunt feugiat diam convallis pharetra. Nulla facilisis semper laoreet.",
                             textAlign = TextAlign.Center,
                             color = Color.White,
-                            fontSize = 18.sp,
+                            fontSize = 16.sp,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
 
