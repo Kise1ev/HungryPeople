@@ -9,16 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -42,6 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,10 +62,63 @@ class HomeActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+            val constraints = ConstraintSet {
+                val iconWithText = createRefFor("iconWithText")
+                val title = createRefFor("title")
+                val coloredBox = createRefFor("coloredBox")
+                val timings = createRefFor("timings")
+                val buttons = createRefFor("buttons")
+                val socialMediaRow = createRefFor("socialMediaRow")
+                val downArrow = createRefFor("downArrow")
+
+                constrain(iconWithText) {
+                    top.linkTo(parent.top, margin = 30.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(title) {
+                    top.linkTo(iconWithText.bottom, margin = 10.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(coloredBox) {
+                    top.linkTo(title.bottom, margin = 20.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(timings) {
+                    top.linkTo(coloredBox.bottom, margin = 30.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(buttons) {
+                    top.linkTo(timings.bottom, margin = 30.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(socialMediaRow) {
+                    top.linkTo(buttons.bottom, margin = 30.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+
+                constrain(downArrow) {
+                    top.linkTo(socialMediaRow.bottom, margin = 30.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            }
+
+            ConstraintLayout(
+                constraintSet = constraints,
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
@@ -80,27 +127,35 @@ class HomeActivity : ComponentActivity() {
                     imageResId = R.drawable.ic_anchor,
                     text = "RESTAURANT",
                     fontSize = 30,
-                    textColor = Color.White
+                    textColor = Color.White,
+                    modifier = Modifier.layoutId("iconWithText")
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
                     text = "HUNGRY PEOPLE",
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     fontSize = 70.sp,
-                    fontFamily = FontFamily(Font(R.font.tenorsans_regular))
+                    fontFamily = FontFamily(Font(R.font.tenorsans_regular)),
+                    modifier = Modifier.layoutId("title")
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                ColoredBox()
-                Spacer(modifier = Modifier.height(30.dp))
-                BodyText("Mon - Fri: 8PM - 10PM", textColor = Color.White)
-                Spacer(modifier = Modifier.height(5.dp))
-                BodyText("Sat - Sun: 8PM - 3AM", textColor = Color.White)
 
-                Spacer(modifier = Modifier.height(30.dp))
+                ColoredBox(modifier = Modifier.layoutId("coloredBox"))
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.layoutId("timings")
+                ) {
+                    BodyText("Mon - Fri: 8PM - 10PM", textColor = Color.White)
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    BodyText("Sat - Sun: 8PM - 3AM", textColor = Color.White)
+                }
 
                 Row(
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.layoutId("buttons")
                 ) {
                     CustomButton(
                         text = "BOOK TABLE",
@@ -122,11 +177,7 @@ class HomeActivity : ComponentActivity() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
-
-                SocialMediaRow()
-
-                Spacer(modifier = Modifier.height(30.dp))
+                SocialMediaRow(modifier = Modifier.layoutId("socialMediaRow"))
 
                 Image(
                     painter = painterResource(id = R.drawable.btn_down),
@@ -138,26 +189,34 @@ class HomeActivity : ComponentActivity() {
                                 context.startActivity(Intent(context, AboutUsActivity::class.java))
                             })
                         }
+                        .layoutId("downArrow")
                 )
             }
         }
     }
 
     @Composable
-    fun IconWithText(imageResId: Int, text: String, fontSize: Int, textColor: Color) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = "Icon",
-            modifier = Modifier.size(170.dp)
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = text,
-            color = textColor,
-            textAlign = TextAlign.Center,
-            fontSize = fontSize.sp,
-            fontFamily = FontFamily(Font(R.font.tenorsans_regular))
-        )
+    fun IconWithText(imageResId: Int, text: String, fontSize: Int, textColor: Color, modifier: Modifier = Modifier) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+        ) {
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = "Icon",
+                modifier = Modifier.size(170.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = text,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                fontSize = fontSize.sp,
+                fontFamily = FontFamily(Font(R.font.tenorsans_regular))
+            )
+        }
     }
 
     @Composable
@@ -172,9 +231,9 @@ class HomeActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ColoredBox() {
+    fun ColoredBox(modifier: Modifier = Modifier) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .width(100.dp)
                 .height(10.dp)
                 .clip(RoundedCornerShape(50))
@@ -207,14 +266,19 @@ class HomeActivity : ComponentActivity() {
     }
 
     @Composable
-    fun SocialMediaRow() {
+    fun SocialMediaRow(modifier: Modifier = Modifier) {
         Row(
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = modifier
         ) {
             SocialMediaIcon(R.drawable.btn_facebook)
+
             Spacer(modifier = Modifier.width(60.dp))
+
             SocialMediaIcon(R.drawable.btn_twitter)
+
             Spacer(modifier = Modifier.width(60.dp))
+
             SocialMediaIcon(R.drawable.btn_instagram)
         }
     }
