@@ -68,7 +68,8 @@ class HomeActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,6 +77,7 @@ class HomeActivity : ComponentActivity() {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
+                Spacer(modifier = Modifier.height(30.dp))
                 IconWithText(
                     imageResId = R.drawable.ic_anchor,
                     text = "RESTAURANT",
@@ -150,7 +152,7 @@ class HomeActivity : ComponentActivity() {
             contentDescription = "Icon",
             modifier = Modifier.size(170.dp)
         )
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = text,
             color = textColor,

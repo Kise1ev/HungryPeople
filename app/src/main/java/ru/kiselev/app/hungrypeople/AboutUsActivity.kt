@@ -67,7 +67,7 @@ class AboutUsActivity : ComponentActivity() {
     fun AboutUsSection(screenHeight: Dp) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp)
                 .height(screenHeight),
             contentAlignment = Alignment.Center
@@ -99,7 +99,7 @@ class AboutUsActivity : ComponentActivity() {
     fun SpecialitySection(screenHeight: Dp) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .height(screenHeight)
         ) {
             Image(

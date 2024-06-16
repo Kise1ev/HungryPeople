@@ -3,6 +3,7 @@ package ru.kiselev.app.hungrypeople
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -75,12 +77,13 @@ class BookATableActivity : ComponentActivity() {
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.height(30.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ic_anchor),
                     contentDescription = "Anchor Icon",
-                    modifier = Modifier
-                        .size(150.dp)
+                    modifier = Modifier.size(170.dp)
                 )
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "BOOK A TABLE",
                     textAlign = TextAlign.Center,
@@ -146,6 +149,7 @@ class BookATableActivity : ComponentActivity() {
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Button(onClick = {
+                                 book(name, email, phone, people, date, time)
                 },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.bright_yellow)),
                     shape = RoundedCornerShape(5.dp),
@@ -285,6 +289,26 @@ class BookATableActivity : ComponentActivity() {
                 )
             }
         )
+    }
+
+    private fun isValidBooking(name: String, email: String, phone: String, people: String, date: String, time: String): Boolean {
+        return name.isNotEmpty() &&
+                isValidEmail(email) &&
+                isValidPhone(phone, "+7-NNN-NNN-NN-NNN") &&
+                people.isNotEmpty() &&
+                date.isNotEmpty() &&
+                time.isNotEmpty()
+    }
+
+    private fun book(name: String, email: String, phone: String, people: String, date: String, time: String) {
+        if (isValidBooking(name, email, phone, people, date, time)) {
+            Toast.makeText(
+                this,
+                "Booking request sent for $people people on $date at $time",
+                Toast.LENGTH_LONG
+            ).show()
+            finish()
+        }
     }
 
     private fun isValidPhone(value: String, mask: String): Boolean {
