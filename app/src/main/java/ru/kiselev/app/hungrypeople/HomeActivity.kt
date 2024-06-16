@@ -67,8 +67,8 @@ class HomeActivity : ComponentActivity() {
 
         Box(
             modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,27 +76,13 @@ class HomeActivity : ComponentActivity() {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(50.dp))
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_anchor),
-                    contentDescription = "Anchor Icon",
-                    modifier = Modifier
-                        .size(170.dp)
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Text(
+                IconWithText(
+                    imageResId = R.drawable.ic_anchor,
                     text = "RESTAURANT",
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    fontSize = 30.sp,
-                    fontFamily = FontFamily(Font(R.font.tenorsans_regular))
+                    fontSize = 30,
+                    textColor = Color.White
                 )
-
                 Spacer(modifier = Modifier.height(10.dp))
-
                 Text(
                     text = "HUNGRY PEOPLE",
                     color = Color.White,
@@ -104,104 +90,41 @@ class HomeActivity : ComponentActivity() {
                     fontSize = 70.sp,
                     fontFamily = FontFamily(Font(R.font.tenorsans_regular))
                 )
-
                 Spacer(modifier = Modifier.height(20.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(100.dp)
-                        .height(10.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(colorResource(id = R.color.bright_yellow))
-                )
-
+                ColoredBox()
                 Spacer(modifier = Modifier.height(30.dp))
-
-                Text(
-                    text = "Mon - Fri: 8PM - 10PM",
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp,
-                    fontFamily = FontFamily(Font(R.font.tenorsans_regular))
-                )
-
+                BodyText("Mon - Fri: 8PM - 10PM", textColor = Color.White)
                 Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = "Sat - Sun: 8PM - 3AM",
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp,
-                    fontFamily = FontFamily(Font(R.font.tenorsans_regular))
-                )
+                BodyText("Sat - Sun: 8PM - 3AM", textColor = Color.White)
 
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = {
+                    CustomButton(
+                        text = "BOOK TABLE",
+                        backgroundColor = colorResource(id = R.color.bright_yellow),
+                        textColor = Color.White
+                    ) {
                         context.startActivity(Intent(context, BookATableActivity::class.java))
-                    },
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.bright_yellow)),
-                        shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier
-                            .size(width = 200.dp, height = 60.dp)) {
-                        Text(
-                            text = "BOOK TABLE",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
                     }
 
-                    Spacer(modifier = Modifier.width(30.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
-                    Button(onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        border = BorderStroke(2.dp, Color.White),
-                        shape = RoundedCornerShape(5.dp),
-                        modifier = Modifier
-                            .size(width = 200.dp, height = 60.dp)) {
-                        Text(
-                            text = "EXPLORE",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                    CustomButton(
+                        text = "EXPLORE",
+                        backgroundColor = Color.Transparent,
+                        textColor = Color.White,
+                        border = BorderStroke(2.dp, Color.White)
+                    ) {
+                        // TODO: Add action for Explore button
                     }
                 }
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.btn_facebook),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(90.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(60.dp))
-
-                    Image(
-                        painter = painterResource(id = R.drawable.btn_twitter),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(90.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(60.dp))
-
-                    Image(
-                        painter = painterResource(id = R.drawable.btn_instagram),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(90.dp)
-                    )
-                }
+                SocialMediaRow()
 
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -218,5 +141,90 @@ class HomeActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    @Composable
+    fun IconWithText(imageResId: Int, text: String, fontSize: Int, textColor: Color) {
+        Image(
+            painter = painterResource(id = imageResId),
+            contentDescription = "Icon",
+            modifier = Modifier.size(170.dp)
+        )
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(
+            text = text,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            fontSize = fontSize.sp,
+            fontFamily = FontFamily(Font(R.font.tenorsans_regular))
+        )
+    }
+
+    @Composable
+    fun BodyText(text: String, textColor: Color = Color.Black) {
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+            fontSize = 25.sp,
+            fontFamily = FontFamily(Font(R.font.tenorsans_regular)),
+            color = textColor
+        )
+    }
+
+    @Composable
+    fun ColoredBox() {
+        Box(
+            modifier = Modifier
+                .width(100.dp)
+                .height(10.dp)
+                .clip(RoundedCornerShape(50))
+                .background(colorResource(id = R.color.bright_yellow))
+        )
+    }
+
+    @Composable
+    fun CustomButton(
+        text: String,
+        backgroundColor: Color,
+        textColor: Color,
+        border: BorderStroke? = null,
+        onClick: () -> Unit
+    ) {
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
+            shape = RoundedCornerShape(5.dp),
+            border = border,
+            modifier = Modifier.size(width = 170.dp, height = 60.dp)
+        ) {
+            Text(
+                text = text,
+                color = textColor,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
+    @Composable
+    fun SocialMediaRow() {
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ) {
+            SocialMediaIcon(R.drawable.btn_facebook)
+            Spacer(modifier = Modifier.width(60.dp))
+            SocialMediaIcon(R.drawable.btn_twitter)
+            Spacer(modifier = Modifier.width(60.dp))
+            SocialMediaIcon(R.drawable.btn_instagram)
+        }
+    }
+
+    @Composable
+    fun SocialMediaIcon(iconResId: Int) {
+        Image(
+            painter = painterResource(id = iconResId),
+            contentDescription = null,
+            modifier = Modifier.size(80.dp)
+        )
     }
 }
