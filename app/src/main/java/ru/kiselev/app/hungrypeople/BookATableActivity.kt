@@ -76,15 +76,12 @@ class BookATableActivity : ComponentActivity() {
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(30.dp))
-
                 Image(
                     painter = painterResource(id = R.drawable.ic_anchor),
                     contentDescription = "Anchor Icon",
-                    modifier = Modifier.size(170.dp)
+                    modifier = Modifier
+                        .size(150.dp)
                 )
-
-                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "BOOK A TABLE",
@@ -113,7 +110,7 @@ class BookATableActivity : ComponentActivity() {
                         placeholder = "Dmitry"
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     CustomTextField(
                         value = email,
@@ -137,13 +134,13 @@ class BookATableActivity : ComponentActivity() {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     CustomTextField(
                         value = people,
                         onValueChange = { people = it },
                         label = "People",
-                        placeholder = "3",
+                        placeholder = "4",
                         isValid = isValidPeopleCount(people),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
@@ -157,7 +154,7 @@ class BookATableActivity : ComponentActivity() {
                         onValueChange = { date = it }
                     )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     TimePickerField(
                         value = time,
@@ -168,7 +165,6 @@ class BookATableActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(onClick = {
-                    createBook(name, email, phone, people, date, time)
                 },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.bright_yellow)),
                     shape = RoundedCornerShape(5.dp),
@@ -176,6 +172,7 @@ class BookATableActivity : ComponentActivity() {
                         width = 400.dp,
                         height = 60.dp
                     )) {
+
                     Text(
                         text = "BOOK NOW",
                         color = Color.White,
@@ -262,7 +259,6 @@ class BookATableActivity : ComponentActivity() {
                                 calendar.get(Calendar.MONTH),
                                 calendar.get(Calendar.DAY_OF_MONTH)
                             )
-                            datePicker.datePicker.minDate = calendar.timeInMillis
                             datePicker.show()
                         }
                 )
@@ -300,7 +296,7 @@ class BookATableActivity : ComponentActivity() {
             label = {
                 Text(
                     text = "Time",
-                    color = Color.DarkGray
+                    color = colorResource(id = R.color.dark_gray)
                 )
             },
             modifier = Modifier.width(170.dp),
@@ -321,21 +317,13 @@ class BookATableActivity : ComponentActivity() {
                                 context,
                                 { _, hourOfDay, _ ->
                                     if (validateWorkingHours(currentDayOfWeek, hourOfDay)) {
-                                        onValueChange(
-                                            String.format(
-                                                Locale.getDefault(),
-                                                "%02d:00",
-                                                hourOfDay
-                                            )
-                                        )
+                                        onValueChange(String.format(Locale.getDefault(), "%02d:00", hourOfDay))
                                     } else {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                "Selected time is not included in the working hours!",
-                                                Toast.LENGTH_LONG
-                                            )
-                                            .show()
+                                        Toast.makeText(
+                                            context,
+                                            "Selected time is not included in working hours!",
+                                            0
+                                        ).show()
                                     }
                                 },
                                 currentHour,
@@ -356,58 +344,9 @@ class BookATableActivity : ComponentActivity() {
         return number != null && number in 1..7
     }
 
-    private fun createBook(name: String, email: String, phone: String, people: String, date: String, time: String) {
-        if (name.isEmpty()) {
-            sendToast(
-                "Please, enter your name!",
-                0
-            )
-            return
-        }
-
-        if (!isValidEmail(email)) {
-            sendToast(
-                "Please, enter your email!",
-                0
-            )
-            return
-        }
-
-        if (!isValidPhone(phone)) {
-            sendToast(
-                "Please, enter your phone!",
-                0
-            )
-            return
-        }
-
-        if (isValidPeopleCount(people)) {
-            sendToast(
-                "Please, enter people count!",
-                0
-            )
-            return
-        }
-
-
-        sendToast(
-            "Booking successful for $people people on $date at $time!",
-            1
-        )
-        finish()
-    }
-
-    private fun sendToast(text: String, toast: Int) {
-        Toast.makeText(
-            this,
-            text,
-            toast
-        ).show()
-    }
-
     private fun isValidPhone(value: String): Boolean {
-        val phonePattern = Regex("^\\+7-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}$")
-        return phonePattern.matches(value)
+        val phoneRegex = Regex("^\\+7-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}$")
+        return phoneRegex.matches(value)
     }
 
     private fun isValidEmail(email: String): Boolean {
