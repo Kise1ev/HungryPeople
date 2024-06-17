@@ -159,8 +159,9 @@ class HomeActivity : ComponentActivity() {
                 ) {
                     CustomButton(
                         text = "BOOK TABLE",
-                        backgroundColor = colorResource(id = R.color.bright_yellow),
-                        textColor = Color.White
+                        backgroundColor = Color.Transparent,
+                        textColor = Color.White,
+                        border = BorderStroke(2.dp, Color.White)
                     ) {
                         context.startActivity(Intent(context, BookATableActivity::class.java))
                     }
@@ -183,7 +184,7 @@ class HomeActivity : ComponentActivity() {
                     painter = painterResource(id = R.drawable.btn_down),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(100.dp)
+                        .size(80.dp)
                         .pointerInput(Unit) {
                             detectTapGestures(onPress = {
                                 context.startActivity(Intent(context, AboutUsActivity::class.java))
@@ -254,12 +255,15 @@ class HomeActivity : ComponentActivity() {
             colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(5.dp),
             border = border,
-            modifier = Modifier.size(width = 170.dp, height = 60.dp)
+            modifier = Modifier.size(
+                width = 150.dp,
+                height = 60.dp
+            )
         ) {
             Text(
                 text = text,
                 color = textColor,
-                fontSize = 18.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -273,11 +277,11 @@ class HomeActivity : ComponentActivity() {
         ) {
             SocialMediaIcon(R.drawable.btn_facebook)
 
-            Spacer(modifier = Modifier.width(60.dp))
+            Spacer(modifier = Modifier.width(50.dp))
 
             SocialMediaIcon(R.drawable.btn_twitter)
 
-            Spacer(modifier = Modifier.width(60.dp))
+            Spacer(modifier = Modifier.width(50.dp))
 
             SocialMediaIcon(R.drawable.btn_instagram)
         }
@@ -288,7 +292,7 @@ class HomeActivity : ComponentActivity() {
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = null,
-            modifier = Modifier.size(80.dp)
+            modifier = Modifier.size(75.dp)
         )
     }
 }

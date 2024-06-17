@@ -4,10 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +45,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
@@ -48,10 +65,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import ru.kiselev.app.hungrypeople.data.ProductData
 import ru.kiselev.app.hungrypeople.models.Product
 import ru.kiselev.app.hungrypeople.models.Speciality
+import kotlin.math.absoluteValue
 
 class AboutUsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -231,7 +251,7 @@ class AboutUsActivity : ComponentActivity() {
                     IconWithText(
                         imageResId = 0,
                         text = "SPECIALITIES",
-                        fontSize = 60,
+                        fontSize = 50,
                         textColor = Color.White
                     )
 
@@ -251,36 +271,69 @@ class AboutUsActivity : ComponentActivity() {
                     ) { page ->
                         val imageWithText = specialities[page]
 
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable {
-                                selectedImage = imageWithText
-                                showDialog = true
-                            }
+                        Box(
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+                                    alpha = 1f - pageOffset.coerceIn(0f, 1f)
+                                    translationX = pageOffset * 100f
+                                }
+                                .clickable {
+                                    selectedImage = imageWithText
+                                    showDialog = true
+                                }
+                                .pointerInput(Unit) {
+                                    detectTapGestures {
+                                        selectedImage = imageWithText
+                                        showDialog = true
+                                    }
+                                }
                         ) {
-                            Image(
-                                painter = painterResource(id = imageWithText.imageResId),
-                                contentDescription = "Gallery Image",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            PulseAnimation {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = imageWithText.imageResId),
+                                        contentDescription = "Gallery Image",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                                    Spacer(modifier = Modifier.height(10.dp))
 
-                            Text(
-                                text = imageWithText.title,
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontFamily = FontFamily(Font(R.font.tenorsans_regular)),
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                                    Text(
+                                        text = imageWithText.title,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 25.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        fontFamily = FontFamily(Font(R.font.tenorsans_regular)),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
+                            }
                         }
                     }
+
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp),
+                        activeColor = Color.White,
+                        inactiveColor = Color.Gray,
+                        indicatorWidth = 16.dp,
+                        indicatorHeight = 16.dp,
+                        spacing = 16.dp
+                    )
                 }
 
-                if (showDialog && selectedImage != null) {
+                AnimatedVisibility(
+                    visible = showDialog && selectedImage != null,
+                    enter = fadeIn() + expandIn(),
+                    exit = fadeOut() + shrinkOut()
+                ) {
                     ImageDialog(
                         speciality = selectedImage!!,
                         onClose = { showDialog = false }
@@ -291,13 +344,33 @@ class AboutUsActivity : ComponentActivity() {
     }
 
     @Composable
+    fun PulseAnimation(content: @Composable () -> Unit) {
+        val infiniteTransition = rememberInfiniteTransition(label = "")
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ), label = ""
+        )
+
+        Box(
+            modifier = Modifier.scale(scale)
+        ) {
+            content()
+        }
+    }
+
+    @Composable
     fun ImageDialog(speciality: Speciality, onClose: () -> Unit) {
         var showDialog by remember { mutableStateOf(false) }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.8f)),
+                .background(Color.Black.copy(alpha = 0.8f))
+                .clickable { },
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -355,7 +428,7 @@ class AboutUsActivity : ComponentActivity() {
                 IconWithText(
                     imageResId = 0,
                     text = "DELICIOUS MENU",
-                    fontSize = 60,
+                    fontSize = 50,
                     textColor = Color.Black
                 )
 
@@ -372,7 +445,10 @@ class AboutUsActivity : ComponentActivity() {
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
                     CustomButton(
                         text = "SOUPE",
                         backgroundColor = Color.Transparent,
@@ -381,8 +457,6 @@ class AboutUsActivity : ComponentActivity() {
                     ) {
                         selectedCategory = "SOUPE"
                     }
-
-                    Spacer(modifier = Modifier.width(20.dp))
 
                     CustomButton(
                         text = "PIZZA",
@@ -396,7 +470,10 @@ class AboutUsActivity : ComponentActivity() {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
                     CustomButton(
                         text = "PASTA",
                         backgroundColor = Color.Transparent,
@@ -405,8 +482,6 @@ class AboutUsActivity : ComponentActivity() {
                     ) {
                         selectedCategory = "PASTA"
                     }
-
-                    Spacer(modifier = Modifier.width(20.dp))
 
                     CustomButton(
                         text = "DESERT",
@@ -420,7 +495,10 @@ class AboutUsActivity : ComponentActivity() {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
                     CustomButton(
                         text = "WINE",
                         backgroundColor = Color.Transparent,
@@ -429,8 +507,6 @@ class AboutUsActivity : ComponentActivity() {
                     ) {
                         selectedCategory = "WINE"
                     }
-
-                    Spacer(modifier = Modifier.width(20.dp))
 
                     CustomButton(
                         text = "BEER",
@@ -454,13 +530,19 @@ class AboutUsActivity : ComponentActivity() {
                 }
             }
 
-            selectedCategory?.let { category ->
-                val products = ProductData.productsByCategory[category] ?: emptyList()
-                ProductDialog(
-                    selectedCategory = category,
-                    products = products,
-                    onClose = { selectedCategory = null }
-                )
+            AnimatedVisibility(
+                visible = selectedCategory != null,
+                enter = fadeIn() + expandIn(),
+                exit = fadeOut() + shrinkOut()
+            ) {
+                selectedCategory?.let { category ->
+                    val products = ProductData.productsByCategory[category] ?: emptyList()
+                    ProductDialog(
+                        selectedCategory = category,
+                        products = products,
+                        onClose = { selectedCategory = null }
+                    )
+                }
             }
         }
     }
@@ -470,7 +552,8 @@ class AboutUsActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.8f)),
+                .background(Color.Black.copy(alpha = 0.8f))
+                .clickable { },
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -600,22 +683,27 @@ class AboutUsActivity : ComponentActivity() {
         val images = listOf(
             R.drawable.img_slider_1,
             R.drawable.img_slider_2,
-            R.drawable.img_slider_3
+            R.drawable.img_slider_3,
+            R.drawable.img_slider_4
         )
         val pagerState = rememberPagerState()
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .height(screenHeight),
+                .height(screenHeight)
+                .background(Brush.verticalGradient(listOf(Color.DarkGray, Color.White))),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
+            ) {
                 IconWithText(
                     imageResId = 0,
                     text = "GALLERY",
                     fontSize = 60,
-                    textColor = Color.Black
+                    textColor = Color.White
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -629,22 +717,45 @@ class AboutUsActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
-                        .background(Color.Black.copy(alpha = 0.3f)),
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Brush.verticalGradient(listOf(Color.White, Color.DarkGray))),
                     state = pagerState
                 ) { page ->
                     val image = images[page]
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.White)
+                            .shadow(elevation = 12.dp, shape = RoundedCornerShape(16.dp))
+                    ) {
                         Image(
                             painter = painterResource(id = image),
                             contentDescription = "Slider Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .height(300.dp)
+                                .clip(RoundedCornerShape(16.dp))
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(8.dp),
+                    activeColor = Color.Black,
+                    inactiveColor = Color.Gray,
+                    indicatorWidth = 16.dp,
+                    indicatorHeight = 16.dp,
+                    spacing = 16.dp
+                )
             }
         }
     }
@@ -702,7 +813,7 @@ class AboutUsActivity : ComponentActivity() {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = "Icon",
-                modifier = Modifier.size(150.dp)
+                modifier = Modifier.size(170.dp)
             )
         }
         Text(
