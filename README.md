@@ -19,7 +19,7 @@
 <h3>Book a table form</h3>
 <img src="https://github.com/Kise1ev/HungryPeople/blob/master/examples/book_a_table_form.png" width="300"/>
 <h3>Speciality section in about us activity</h3>
-<img src="https://github.com/Kise1ev/HungryPeople/blob/master/examples/speciality_section.png" width="300"/>
+<img src="https://github.com/Kise1ev/HungryPeople/blob/master/examples/specialities_section.png" width="300"/>
 
 <h1>💬 Contacts</h1>
 <p>
