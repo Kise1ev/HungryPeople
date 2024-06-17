@@ -9,9 +9,7 @@
 
 <h1>📦 Getting Started</h1>
 <h3>1. Clone this repository</h3>
-```bash
-git clone https://github.com/Kise1ev/HungryPeople.git
-```
+<code>git clone https://github.com/Kise1ev/HungryPeople.git</code>
 <h3>2. Run Android Studio and open this project</h3>
 <h3>3. Compile the project using the keyboard shortcut Ctrl+F9</h3>
 
