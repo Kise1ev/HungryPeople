@@ -164,6 +164,7 @@ class BookATableActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(onClick = {
+                    createBook(name, email, phone, people, date, time)
                 },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.bright_yellow)),
                     shape = RoundedCornerShape(5.dp),
@@ -316,12 +317,16 @@ class BookATableActivity : ComponentActivity() {
                                 context,
                                 { _, hourOfDay, _ ->
                                     if (validateWorkingHours(currentDayOfWeek, hourOfDay)) {
-                                        onValueChange(String.format(Locale.getDefault(), "%02d:00", hourOfDay))
+                                        onValueChange(String.format(
+                                            Locale.getDefault(),
+                                            "%02d:00",
+                                            hourOfDay
+                                        ))
                                     } else {
                                         Toast.makeText(
                                             context,
                                             "Selected time is not included in working hours!",
-                                            0
+                                            Toast.LENGTH_SHORT
                                         ).show()
                                     }
                                 },
@@ -337,6 +342,54 @@ class BookATableActivity : ComponentActivity() {
         )
     }
 
+    private fun createBook(name: String, email: String, phone: String, people: String, date: String, time: String) {
+        if (name.isEmpty()) {
+            sendToast(
+                "Please, enter your name!",
+                0
+            )
+            return
+        }
+
+        if (!isValidEmail(email)) {
+            sendToast(
+                "Please, enter your email!",
+                0
+            )
+            return
+        }
+
+        if (!isValidPhone(phone)) {
+            sendToast(
+                "Please, enter your phone!",
+                0
+            )
+            return
+        }
+
+        if (isValidPeopleCount(people)) {
+            sendToast(
+                "Please, enter people count!",
+                0
+            )
+            return
+        }
+
+
+        sendToast(
+            "Booking successful for $people people on $date at $time!",
+            1
+        )
+        finish()
+    }
+
+    private fun sendToast(text: String, toast: Int) {
+        Toast.makeText(
+            this,
+            text,
+            toast
+        ).show()
+    }
 
     private fun isValidPeopleCount(count: String): Boolean {
         val number = count.toIntOrNull()
