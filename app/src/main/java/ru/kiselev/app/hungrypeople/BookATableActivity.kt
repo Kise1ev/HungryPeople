@@ -79,8 +79,7 @@ class BookATableActivity : ComponentActivity() {
                 Image(
                     painter = painterResource(id = R.drawable.ic_anchor),
                     contentDescription = "Anchor Icon",
-                    modifier = Modifier
-                        .size(150.dp)
+                    modifier = Modifier.size(150.dp)
                 )
 
                 Text(
