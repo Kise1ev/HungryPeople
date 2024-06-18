@@ -5,6 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,10 +23,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
@@ -111,7 +119,7 @@ class HomeActivity : ComponentActivity() {
                 }
 
                 constrain(downArrow) {
-                    top.linkTo(socialMediaRow.bottom, margin = 30.dp)
+                    top.linkTo(socialMediaRow.bottom, margin = 40.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -180,19 +188,45 @@ class HomeActivity : ComponentActivity() {
 
                 SocialMediaRow(modifier = Modifier.layoutId("socialMediaRow"))
 
-                Image(
-                    painter = painterResource(id = R.drawable.btn_down),
-                    contentDescription = null,
+                PulseAnimation(
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(60.dp)
                         .pointerInput(Unit) {
                             detectTapGestures(onPress = {
                                 context.startActivity(Intent(context, AboutUsActivity::class.java))
                             })
                         }
                         .layoutId("downArrow")
-                )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.btn_down),
+                        contentDescription = null
+                    )
+                }
             }
+        }
+    }
+
+    @Composable
+    fun PulseAnimation(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+        val infiniteTransition = rememberInfiniteTransition(label = "")
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 1.2f,
+            targetValue = 1.6f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ), label = ""
+        )
+
+        Box(
+            modifier = modifier
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale
+                )
+        ) {
+            content()
         }
     }
 
@@ -263,7 +297,7 @@ class HomeActivity : ComponentActivity() {
             Text(
                 text = text,
                 color = textColor,
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
         }

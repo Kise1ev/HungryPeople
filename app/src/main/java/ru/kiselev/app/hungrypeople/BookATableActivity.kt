@@ -389,14 +389,13 @@ class BookATableActivity : ComponentActivity() {
             return
         }
 
-        if (isValidPeopleCount(people)) {
+        if (!isValidPeopleCount(people)) {
             sendToast(
                 "Please, enter people count!",
                 0
             )
             return
         }
-
 
         sendToast(
             "Booking successful for $people people on $date at $time!",

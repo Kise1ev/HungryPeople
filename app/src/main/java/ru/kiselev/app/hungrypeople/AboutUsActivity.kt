@@ -86,8 +86,7 @@ class AboutUsActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun AboutUsScreen() {
-        val configuration = LocalConfiguration.current
-        val screenHeight = configuration.screenHeightDp.dp + 100.dp
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp + 100.dp
 
         Column(
             modifier = Modifier
@@ -274,7 +273,8 @@ class AboutUsActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier
                                 .graphicsLayer {
-                                    val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+                                    val pageOffset =
+                                        calculateCurrentOffsetForPage(page).absoluteValue
                                     alpha = 1f - pageOffset.coerceIn(0f, 1f)
                                     translationX = pageOffset * 100f
                                 }
@@ -773,12 +773,15 @@ class AboutUsActivity : ComponentActivity() {
             colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(5.dp),
             border = border,
-            modifier = Modifier.size(width = 170.dp, height = 60.dp)
+            modifier = Modifier.size(
+                width = 150.dp,
+                height = 60.dp
+            )
         ) {
             Text(
                 text = text,
                 color = textColor,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
         }
