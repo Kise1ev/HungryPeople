@@ -1,6 +1,5 @@
 package ru.kiselev.app.hungrypeople
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -20,8 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -87,7 +88,8 @@ class BookATableActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -282,7 +284,13 @@ class BookATableActivity : ComponentActivity() {
                             val datePicker = DatePickerDialog(
                                 context,
                                 { _, year, month, dayOfMonth ->
-                                    val formattedDate = String.format(Locale.getDefault(), "%02d-%02d-%d", dayOfMonth, month + 1, year)
+                                    val formattedDate = String.format(
+                                        Locale.getDefault(),
+                                        "%02d-%02d-%d",
+                                        dayOfMonth,
+                                        month + 1,
+                                        year
+                                    )
                                     onValueChange(formattedDate)
                                 },
                                 calendar.get(Calendar.YEAR),

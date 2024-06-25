@@ -12,7 +12,7 @@ android {
         applicationId = "ru.kiselev.app.hungrypeople"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -61,7 +61,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.cdimascio.dotenv.kotlin)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.androidx.navigation.compose)
