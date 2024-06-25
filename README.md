@@ -1,6 +1,6 @@
 <h1>🔨 Frameworks</h1>
 <p>
-    <h3>Android Studio development environment was used to develop the project</h3>
+    <h3>Android Studio | Jellyfish (2023.3.1) development environment was used to develop the project</h3>
     <a href="https://developer.android.com/studio"><img src="https://github.com/Kise1ev/Kise1ev/blob/master/Icons/AndroidStudio-Square.svg"/></a>
     <h3>For this project was been used Gradle v8.6 and code was written in Kotlin SDK</h3>
     <a href="https://gradle.org/"><img src="https://github.com/Kise1ev/Kise1ev/blob/master/Icons/Gradle-Square.svg"/></a>
