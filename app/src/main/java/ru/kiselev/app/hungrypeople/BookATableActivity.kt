@@ -1,5 +1,6 @@
 package ru.kiselev.app.hungrypeople
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -42,19 +43,29 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import ru.kiselev.app.hungrypeople.clients.SupabaseClient
 import ru.kiselev.app.hungrypeople.helpers.DateTimeHelper.getCurrentDate
 import ru.kiselev.app.hungrypeople.helpers.DateTimeHelper.getCurrentTime
 import ru.kiselev.app.hungrypeople.helpers.Validator.isValidEmail
 import ru.kiselev.app.hungrypeople.helpers.Validator.isValidPeopleCount
 import ru.kiselev.app.hungrypeople.helpers.Validator.isValidPhone
+import ru.kiselev.app.hungrypeople.models.Booking
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class BookATableActivity : ComponentActivity() {
+
+    private val job = Job()
+    private val scope = CoroutineScope(Dispatchers.Main + job)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -271,7 +282,8 @@ class BookATableActivity : ComponentActivity() {
                             val datePicker = DatePickerDialog(
                                 context,
                                 { _, year, month, dayOfMonth ->
-                                    onValueChange("$dayOfMonth/${month + 1}/$year")
+                                    val formattedDate = String.format(Locale.getDefault(), "%02d-%02d-%d", dayOfMonth, month + 1, year)
+                                    onValueChange(formattedDate)
                                 },
                                 calendar.get(Calendar.YEAR),
                                 calendar.get(Calendar.MONTH),
@@ -365,43 +377,113 @@ class BookATableActivity : ComponentActivity() {
     }
 
     private fun createBook(name: String, email: String, phone: String, people: String, date: String, time: String) {
-        if (name.isEmpty()) {
-            sendToast(
-                "Please, enter your name!",
-                0
-            )
-            return
-        }
+        try {
+            if (name.isEmpty()) {
+                sendToast("Please, enter your name!", 0)
+                return
+            }
 
-        if (!isValidEmail(email)) {
-            sendToast(
-                "Please, enter your email!",
-                0
-            )
-            return
-        }
+            if (!isValidEmail(email)) {
+                sendToast("Please, enter your email!", 0)
+                return
+            }
 
-        if (!isValidPhone(phone)) {
-            sendToast(
-                "Please, enter your phone!",
-                0
-            )
-            return
-        }
+            if (!isValidPhone(phone)) {
+                sendToast("Please, enter your phone!", 0)
+                return
+            }
 
-        if (!isValidPeopleCount(people)) {
-            sendToast(
-                "Please, enter people count!",
-                0
-            )
-            return
-        }
+            if (!isValidPeopleCount(people)) {
+                sendToast("Please, enter people count!", 0)
+                return
+            }
 
-        sendToast(
-            "Booking successful for $people people on $date at $time!",
-            1
-        )
-        finish()
+            val peopleCount = people.trim()
+            if (!peopleCount.matches(Regex("[0-9]+"))) {
+                sendToast("Invalid format for people count!", 0)
+                return
+            }
+
+            val peopleInt = peopleCount.toInt()
+            if (!isValidPeopleCount(peopleInt)) {
+                sendToast("Please, enter a valid number for people count!", 0)
+                return
+            }
+
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+            val dateObj = dateFormat.parse(date)
+
+            if (dateObj == null) {
+                sendToast("Invalid date format!", 0)
+                return
+            }
+
+            val isoDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val isoDate = isoDateFormat.format(dateObj)
+
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val timeObj = timeFormat.parse(time)
+
+            if (timeObj == null) {
+                sendToast("Invalid time format!", 0)
+                return
+            }
+
+            val isoTime = timeFormat.format(timeObj)
+
+            if (!isRestaurantOpen(dateObj, timeObj)) {
+                sendToast("The restaurant is closed at this time!", 0)
+                return
+            }
+
+            val booking = Booking(
+                name = name,
+                email = email,
+                phone = phone,
+                people = peopleInt,
+                date = isoDate,
+                time = isoTime
+            )
+
+            scope.launch {
+                try {
+                    sendToast("Please, wait...", 0)
+                    SupabaseClient.addBooking(booking)
+                    runOnUiThread {
+                        sendToast("Booking successful for $people people on $date at $time!", 1)
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        sendToast("Failed to create booking!", 0)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            sendToast("Failed to create booking!", 0)
+        }
+    }
+
+    private fun isRestaurantOpen(date: Date, time: Date): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+        calendar.time = time
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+
+        return when (dayOfWeek) {
+            Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY -> {
+                hour in 20..21
+            }
+            Calendar.SATURDAY -> {
+                hour in 20..23 || hour in 0..2
+            }
+            Calendar.SUNDAY -> {
+                hour in 0..2 || hour in 20..23
+            }
+            else -> false
+        }
     }
 
     private fun sendToast(text: String, toast: Int) {

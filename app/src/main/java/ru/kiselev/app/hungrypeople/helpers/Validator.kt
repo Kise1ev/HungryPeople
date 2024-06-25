@@ -15,4 +15,8 @@ object Validator {
         val number = count.toIntOrNull()
         return number != null && number in 1..7
     }
+
+    fun isValidPeopleCount(count: Int): Boolean {
+        return count in 1..7
+    }
 }

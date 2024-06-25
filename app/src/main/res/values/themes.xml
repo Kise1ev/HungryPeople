@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.HungryPeople" parent="android:Theme.Material.Light.NoActionBar.Overscan"/>
+    <style name="Theme.HungryPeople" parent="android:Theme.Material.Light.NoActionBar.TranslucentDecor">
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
